@@ -18,6 +18,7 @@ module Tests
     def test_xxx_constructor()
       #
       TestVals.each do |t|
+        t.tCase = self
         if (t.data.nil?)
           t.test do |t2|
             lec = SetOf.new(t2.mClass)
@@ -25,6 +26,9 @@ module Tests
         else
           t.test do |t2|
             lec = SetOf.new(t2.mClass, t2.data)
+          end
+          t.test do |t2|
+            lec = SetOf.new(t2.mClass, t2.data) { |x| x }
           end
         end
       end

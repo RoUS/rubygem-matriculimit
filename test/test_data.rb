@@ -1,6 +1,6 @@
 require 'rubygems'
 require File.dirname(__FILE__) + '/test_helper.rb'
-require 'test/unit/assertions'
+#require 'test/unit/assertions'
 
 module Tests
 
@@ -30,6 +30,11 @@ module Tests
     attr_reader   :expectation
 
     #
+    # Calling testcase.
+    #
+    attr_accessor :tCase
+
+    #
     # Actual data for the test
     #
     attr_reader   :data
@@ -50,22 +55,21 @@ module Tests
       settings.each { |k,v| eval("@#{k} = v") }
     end                         # def initialize
 
-    include Test::Unit::Assertions
-
     def test(&block)
-
+      mClass = @mClass.to_s
+      mClass = @mClass.inspect if (mClass.empty?)
       desc = @desc
       desc << " [expect=#{@expectation.to_s}]"
-      desc << " [mClass=#{@mClass}]"
+      desc << " [mClass=#{mClass}]"
       desc << " [kClass=#{@kClass}]" unless (@kClass.nil?)
       if (@expectation.ancestors.include?(Exception) rescue false)
-        assert_raise(@expectation, desc) do
+        @tCase.assert_raise(@expectation, desc) do
           block.call(self)
         end
       elsif (@expectation == SHOULD_SUCCEED)
-        assert(block.call(self), desc)
+        @tCase.assert(block.call(self), desc)
       elsif (@expectation == SHOULD_FAIL)
-        assert(! block.call(self), desc)
+        @tCase.assert(! block.call(self), desc)
       else
         raise RuntimeError.new('unexpected expectation: ' +
                                "#{t.expectation}:#{t.expectation.class.name}")
@@ -90,6 +94,12 @@ module Tests
   # TestVal.data         The actual data.
   #
   TestVals = [
+              TestVal.new(:to_test     => %r/SetOf/,
+                          :expectation => TypeError,
+                          :mClass      => nil,
+                          :data        => nil,
+                          :desc        => 'Nil class restriction and nil data'
+                          ),
               TestVal.new(:to_test     => %r/SetOf/,
                           :expectation => SHOULD_SUCCEED,
                           :mClass      => String,
