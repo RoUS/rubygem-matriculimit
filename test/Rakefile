@@ -1,0 +1,10 @@
+here = File.dirname(__FILE__) + '/'
+libdir = File.expand_path(here + '../lib/')
+$LOAD_PATH.unshift(libdir)
+
+task  :default => [ :test_setof ] 
+
+desc 'Test SetOf class'
+task :test_setof do
+     ruby "-I#{libdir} #{here}test_setof.rb"
+end
